@@ -2,7 +2,6 @@
 
 **Projeto:** Janus (Plataforma de Monitoramento e Análise de Narrativas Midiáticas)
 **Versão da Arquitetura:** 1.2 (Nomenclatura Refinada)
-**Responsável:** Arquiteto de Software Sênior
 **Data:** 06 de Dezembro de 2025
 
 ---
