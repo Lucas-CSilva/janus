@@ -1,11 +1,16 @@
 # Janus
 
-**Global Media Narrative Intelligence Platform**
+**Plataforma de Inteligência de Narrativas Midiáticas Globais**
 
-Janus is an event-driven distributed system designed to deconstruct the information war in real-time. It aggregates global news streams, uses NLP to quantify bias and semantic dissonance between conflicting nations, and visualizes narratives through geospatial heatmaps and knowledge graphs.
+O Janus é um sistema distribuído orientado a eventos projetado para desconstruir a guerra da informação em tempo real. A plataforma agrega fluxos globais de notícias, utiliza Processamento de Linguagem Natural (PLN) para quantificar viés e dissonância semântica entre nações conflitantes, e visualiza essas narrativas através de mapas de calor geoespaciais e grafos de conhecimento.
 
-**Architecture Highlights:**
-* **Pattern:** Kappa Architecture (Log-centric, event sourcing).
+**Destaques da Arquitetura:**
+* **Padrão:** Kappa Architecture (Log-centric, event sourcing).
 * **Core:** Kafka, Zookeeper, Python (Transformers/Spacy).
-* **Polyglot Persistence:** Neo4j (Graphs), MongoDB (Docs), PostGIS (Geo/Time).
-* **Key Features:** Automated bias detection, multilingual entity extraction, and source comparison (Split-View).
+* **Persistência Poliglota:** Neo4j (Grafos), MongoDB (Docs), PostGIS (Geo/Tempo).
+* **Funcionalidades Chave:** Detecção automatizada de viés, extração de entidades multilíngue e comparação de fontes (Split-View).
+
+---
+📚 **Documentação:**
+- [Proposta de Projeto](docs/project-proposal.md)
+- [Arquitetura de Alto Nível (HLA)](docs/high-level-architecture.md)
