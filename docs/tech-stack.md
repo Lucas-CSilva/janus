@@ -28,13 +28,13 @@ Serviço crítico de I/O, responsável por manter milhares de conexões HTTP sim
     * **Modelo Reativo (Non-Blocking):** O uso do Project Reactor permite gerenciar milhares de requisições de *scraping* simultâneas com um número reduzido de *threads*, replicando a eficiência de concorrência necessária sem a complexidade de gerenciar uma stack separada em Go.
     * **Ecossistema:** Acesso a bibliotecas robustas de *scraping* e resiliência (Resilience4j) nativas do ecossistema Java.
 
-### 2.2. Babel Service (Normalização e Tradução)
-Gateway de entrada para o pipeline de processamento, atuando como orquestrador de chamadas de tradução.
+### 2.2. Babel Service (Normalização e Contexto) 
+Gateway de entrada para o pipeline de processamento, atuando como identificador de idioma e injetor de contexto (`LocaleContext`).
 
 * **Linguagem:** **Python 3.11+**
 * **Framework:** **FastAPI** (com servidor ASGI `Uvicorn`).
 * **Justificativa Arquitetural:**
-    * Embora envolva I/O (chamadas a APIs de tradução ou modelos locais), a necessidade de pré-processamento de texto e detecção de idioma (LID) com bibliotecas como `fasttext` ou `langdetect` torna o Python a escolha natural para manter a coesão com o restante do núcleo de IA. O FastAPI garante a performance assíncrona necessária para não bloquear enquanto aguarda a inferência da tradução.
+    * Embora envolva I/O (chamadas a APIs de suporte ou bases de conhecimento), a necessidade de pré-processamento de texto e detecção de idioma (LID) com bibliotecas como `fasttext` ou `langdetect` torna o Python a escolha natural para manter a coesão com o restante do núcleo de IA. O FastAPI garante a performance assíncrona necessária para não bloquear enquanto aguarda a inferência da tradução.
 
 ### 2.3. Knowledge Extractor (O "Cérebro" PLN)
 O coração da inteligência, puramente CPU/GPU-bound. Realiza NER, Análise de Sentimento e Sumarização.
@@ -45,6 +45,7 @@ O coração da inteligência, puramente CPU/GPU-bound. Realiza NER, Análise de 
 * **Justificativa Arquitetural:**
     * **Hegemonia de Ecossistema:** O Python é a *lingua franca* da Inteligência Artificial. Utilizar qualquer outra linguagem exigiria "pontes" ou reimplementações ineficientes de modelos SOTA (State-of-the-Art).
     * **Integração:** Facilidade de carregar modelos pré-treinados e realizar fine-tuning específico para o domínio geopolítico.
+    * **Poliglotismo Dinâmico:** A arquitetura Python permite a injeção dinâmica de modelos (ex: carregar BERTimbau para contextos PT-BR ou CamemBERT para FR) no mesmo runtime, viabilizando a estratégia "Native-First" sem duplicidade de microserviços.
 
 ### 2.4. Narrative Analyzer (Análise e Grafos)
 Serviço lógico-matemático que calcula vetores e interage com estruturas de grafos complexas.

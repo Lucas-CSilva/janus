@@ -32,9 +32,11 @@ Responsável pela fronteira de entrada de dados, garantindo resiliência contra 
 Responsável pela gestão multilíngue e padronização, garantindo que o restante do pipeline opere de forma agnóstica ao idioma original.
 
 * **Responsabilidades:**
-    * **Identificação de Idioma (LID):** Detecção automática do idioma da fonte.
-    * **Tradução Neural:** Tradução automática para o inglês (idioma pivô da análise) utilizando modelos de tradução de máquina, preservando sempre o texto original para auditoria e *compliance*.
-* **Saída:** Evento `ArtigoNormalizado` (Texto original + Texto traduzido).
+    * **Identificação de Idioma (LID):** Detecção automática do idioma da fonte e injeção do objeto `LocaleContext` no evento.
+
+    * **Roteamento de Contexto:** Determina qual pipeline de modelos deve ser ativado para aquele conteúdo (ex: Rota PT-BR aciona modelos treinados em português).
+
+* **Saída:** Evento `ArtigoNormalizado` (Texto original + Objeto `LocaleContext`).
 
 ### 2.3. Extrator de Conhecimento ("Knowledge Extractor")
 Conjunto de *workers* escaláveis horizontalmente (Padrão *Competing Consumers*).
@@ -69,7 +71,7 @@ O fluxo foi refinado para eliminar falsos positivos e garantir a normalização 
 
 1.  **Ingestão e Deduplicação (Collector):** O Collector busca a URL. Verifica ineditismo consultando um **Cache Distribuído (Redis)** com política LRU. Se inédito, baixa o conteúdo.
 2.  **Classificação de Ruído (Collector):** O *Classificador de Relevância* avalia o texto. Se aprovado, publica o evento.
-3.  **Tradução (Babel):** O *Babel Service* traduz o conteúdo para o inglês, se necessário, e normaliza datas/formatos.
+3.  **Contextualização (Babel):** O Babel Service identifica o idioma, injeta o LocaleContext e, opcionalmente, gera uma tradução auxiliar para visualização.
 4.  **Enriquecimento (Knowledge Extractor):** Processamento paralelo de NER, Sentimento e Resumo sobre o texto normalizado.
 5.  **Clusterização e Arbitragem (Narrative Analyzer):** O artigo é associado a um evento existente. O *Narrative Analyzer* calcula as diferenças narrativas contra outras fontes do cluster.
 6.  **Persistência Poliglota:** Os dados enriquecidos são roteados para os armazenamentos especializados (Sink Connectors).
@@ -142,6 +144,14 @@ Adoção do padrão **OpenTelemetry**.
 
 ---
 
-## 7. Conclusão
+## 7. Princípio de Design Arquitetural: Locale Context
+Para garantir a extensibilidade global, todos os microserviços devem aderir ao padrão Locale-Context:
+    * **Injeção de Metadados:*** Nenhum texto é processado sem saber seu LangID e RegionID.
+    * **Proibição de Regras Rígidas:** É vetado o uso de regras de validação específicas de um idioma (ex: Regex para CEP brasileiro) no núcleo dos serviços. Essas regras devem residir em módulos de configuração injetáveis.
+    * **UTF-8 Enforcement:** Todo o pipeline, da ingestão ao banco de dados, deve forçar codificação UTF-8 para suportar caracteres globais.
+
+---
+
+## 8. Conclusão
 
 A arquitetura v1.2 do **Projeto Janus** consolida a maturidade técnica da plataforma. Com a definição clara dos serviços (`collector`, `babel`, `knowledge-extractor`, `narrative-analyzer`, `api-gateway`) e a adoção de padrões robustos de observabilidade, o sistema está apto a suportar a complexidade da análise de narrativas geopolíticas globais com confiabilidade e precisão.
