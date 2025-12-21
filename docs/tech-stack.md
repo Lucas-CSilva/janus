@@ -21,11 +21,12 @@ Abaixo apresenta-se a definição técnica para cada um dos cinco serviços core
 ### 2.1. Collector Service (Coleta)
 Serviço crítico de I/O, responsável por manter milhares de conexões HTTP simultâneas e gerenciar *backpressure*.
 
-* **Linguagem:** **Go (Golang)**
-* **Framework/Libs:** `Colly` (Scraping), `Sarama` (Kafka Client).
+* **Linguagem:** **Java 21 (LTS)**
+* **Framework/Libs:** **Spring Boot 3** com **Spring WebFlux** (Project Reactor) para concorrência, `Jsoup` (Parsing HTML) e `Spring Kafka`.
 * **Justificativa Arquitetural:**
-    * **Modelo de Concorrência (Goroutines):** O Go permite a execução de milhares de "crawlers" leves simultaneamente com um footprint de memória minúsculo comparado a Threads de SO tradicionais. Ideal para o *Adaptive Polling* e alta vazão de requisições de rede.
-    * **Performance Bruta:** Compilação nativa e gerenciamento eficiente de garbage collection para ciclos de vida curtos de objetos (requests HTTP).
+    * **Uniformidade de Stack I/O:** O alinhamento com o *API Gateway* (também em Java/WebFlux) simplifica a esteira de DevOps e o compartilhamento de bibliotecas de utilitários e DTOs.
+    * **Modelo Reativo (Non-Blocking):** O uso do Project Reactor permite gerenciar milhares de requisições de *scraping* simultâneas com um número reduzido de *threads*, replicando a eficiência de concorrência necessária sem a complexidade de gerenciar uma stack separada em Go.
+    * **Ecossistema:** Acesso a bibliotecas robustas de *scraping* e resiliência (Resilience4j) nativas do ecossistema Java.
 
 ### 2.2. Babel Service (Normalização e Tradução)
 Gateway de entrada para o pipeline de processamento, atuando como orquestrador de chamadas de tradução.
