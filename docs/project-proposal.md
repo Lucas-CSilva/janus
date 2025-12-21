@@ -66,6 +66,7 @@ O sistema será composto por módulos funcionais independentes e intercomunicáv
 
 ### **5.2 Módulo de Processamento de Linguagem Natural (The Brain)**
 Este é o núcleo da inteligência da proposta. Deve suportar:
+- **Arquitetura de Modelos Plugáveis:** O módulo deve selecionar dinamicamente o modelo de IA com base no idioma detectado no metadado do artigo, garantindo que a análise semântica respeite as nuances culturais originais.
 - **Detecção de Viés:** Algoritmos que analisam a adjetivação e advérbios usados próximos a entidades chave (ex: Chamar um grupo de "rebeldes" vs. "terroristas").
 - **Sumarização Extrativa e Abstrativa:** Geração automática de resumos executivos de múltiplos artigos sobre o mesmo tópico.
 - **Clusterização de Tópicos:** Agrupamento automático de notícias que falam sobre o mesmo evento, permitindo a comparação direta.
