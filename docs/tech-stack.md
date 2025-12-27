@@ -1,6 +1,6 @@
 **Projeto:** Janus (Plataforma de Monitoramento e Análise de Narrativas Midiáticas)
-**Documento Referência:** HLA v1.2 & Proposta de Projeto v1.0
-**Data:** 26 de Dezembro de 2025
+**Documento Referência:** HLA v1.3 & Proposta de Projeto v1.0
+**Data:** 27 de Dezembro de 2025
 
 ---
 
@@ -30,7 +30,7 @@ Serviço crítico de I/O, responsável pela descoberta de fontes, gestão de lim
     * **Híbrido:** Integração com NewsData.io e NewsAPI.org com lógica de fallback automático para feeds RSS diretos (G1, Folha, UOL) ao atingir limites de taxa.
 * **Extração de Conteúdo:** Orquestração de chamadas para bibliotecas Python especializadas como **Newspaper4k** ou **Crawl4AI** para converter HTML em Markdown estruturado.
 
-### 2.2. Babel Service (Normalização e Contexto) 
+### 2.2. Babel Service (Normalização e Contexto)
 Gateway de entrada para o pipeline de processamento, responsável pela identificação de idioma e injeção de contexto (`LocaleContext`).
 
 * **Linguagem:** **Python 3.11+**.
@@ -56,6 +56,17 @@ Ponto único de contato para o Frontend, agregando dados via GraphQL.
 * **Linguagem:** **Java 21 (LTS)**.
 * **Framework:** **Spring Boot 3** com **Spring WebFlux** e **Spring GraphQL**.
 
+### 2.6. Frontend Application ("The Lens")
+* **Framework Web:** **Next.js** (React).
+    * *Justificativa:* Suporte nativo a SSR/RSC (React Server Components) para performance.
+* **Linguagem:** **TypeScript**.
+* **Componentes de UI:** **shadcn/ui**.
+    * *Justificativa:* Coleção de componentes acessíveis e customizáveis (baseados em Radix UI e Tailwind CSS), permitindo maior controle sobre o design system do que bibliotecas fechadas.
+* **Gerenciamento de Estado:** TanStack Query.
+* **Visualização de Dados:**
+    * *Mapas:* MapLibre GL ou Leaflet.
+    * *Grafos:* React Force Graph.
+
 ---
 
 ## 3. Resumo da Stack Tecnológica
@@ -67,6 +78,7 @@ Ponto único de contato para o Frontend, agregando dados via GraphQL.
 | **Knowledge Extractor** | CPU/GPU Intensivo | **Python (PyTorch/Spacy)** | Hegemonia no ecossistema de Deep Learning e Transformers. |
 | **Narrative Analyzer** | Lógica/Matemática | **Python (NumPy/Scikit)** | Eficiência em cálculos vetoriais e drivers flexíveis para Grafos. |
 | **API Gateway** | Agregação/Vazão | **Java 21 (Spring WebFlux)** | Modelo não-bloqueante ideal para orquestração de I/O em GraphQL. |
+| **Frontend** | UI/Interatividade | **Next.js (TypeScript)** | Renderização híbrida (SSR/CSR) para performance e ecossistema rico de visualização de dados. |
 
 ---
 
