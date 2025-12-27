@@ -1,8 +1,8 @@
 # Definição de Arquitetura de Alto Nível (HLA)
 
 **Projeto:** Janus (Plataforma de Monitoramento e Análise de Narrativas Midiáticas)
-**Versão da Arquitetura:** 1.2 (Nomenclatura Refinada)
-**Data:** 06 de Dezembro de 2025
+**Versão da Arquitetura:** 1.3 (Inclusão da Camada de Frontend)
+**Data:** 27 de Dezembro de 2025
 
 ---
 
@@ -16,15 +16,15 @@ A comunicação entre serviços é estritamente assíncrona para operações de 
 
 ## 2. Catálogo de Serviços e Responsabilidades
 
-A arquitetura do Janus é composta por cinco serviços principais, desacoplados e especializados, organizados para maximizar a coesão e minimizar o acoplamento.
+A arquitetura do Janus é composta por serviços principais, desacoplados e especializados, organizados para maximizar a coesão e minimizar o acoplamento.
 
-### 2.1. Serviço de Coleta ("Collector Service")
+### 2.1. Serviço de Coleta ("Collector Service")
 Responsável pela fronteira de entrada de dados, garantindo resiliência contra falhas externas e alta qualidade do dado bruto.
 
 * **Sub-componente: Gestor de Fontes e Resiliência**
     * **Circuit Breaker:** Implementação de padrão de proteção para fontes instáveis ou com *rate-limits* agressivos. Se uma fonte falhar repetidamente, o circuito abre para evitar desperdício de recursos.
     * **Estratégia de Adaptive Polling:** Fontes com alta frequência de atualização (ex: Live Blogs) são visitadas mais vezes que fontes estáticas.
-* **Sub-componente: Classificador de Relevância (Noise Filter) **
+* **Sub-componente: Classificador de Relevância (Noise Filter)**
     * **Função:** Filtrar conteúdo "Não Relacionado a Conflito" com base em vocabulário e contexto semântico. Apenas artigos com *score* de relevância > 0.75 avançam no pipeline, garantindo pureza dos dados.
 * **Saída:** Evento `ArtigoBrutoColetado` (payload original + metadados).
 
@@ -33,12 +33,10 @@ Responsável pela gestão multilíngue e padronização, garantindo que o restan
 
 * **Responsabilidades:**
     * **Identificação de Idioma (LID):** Detecção automática do idioma da fonte e injeção do objeto `LocaleContext` no evento.
-
     * **Roteamento de Contexto:** Determina qual pipeline de modelos deve ser ativado para aquele conteúdo (ex: Rota PT-BR aciona modelos treinados em português).
-
 * **Saída:** Evento `ArtigoNormalizado` (Texto original + Objeto `LocaleContext`).
 
-### 2.3. Extrator de Conhecimento ("Knowledge Extractor")
+### 2.3. Extrator de Conhecimento ("Knowledge Extractor")
 Conjunto de *workers* escaláveis horizontalmente (Padrão *Competing Consumers*).
 
 * **Processador de Entidades e Geoespacial:** Executa NER (*Named Entity Recognition*) multilíngue para extração de atores políticos e resolve toponímia para coordenadas padronizadas.
@@ -47,7 +45,7 @@ Conjunto de *workers* escaláveis horizontalmente (Padrão *Competing Consumers*
     * Identifica "adjetivação carregada" (framing) próxima às entidades chave.
 * **Gerador de Resumos:** Sumarização abstrativa focada nos parágrafos onde as entidades detectadas aparecem, utilizando LLMs otimizados para resumo.
 
-### 2.4. Analisador de Narrativas ("Narrative Analyzer")
+### 2.4. Analisador de Narrativas ("Narrative Analyzer")
 Serviço especializado em análise comparativa e arbitragem de fontes.
 
 * **Responsabilidades:**
@@ -63,6 +61,14 @@ Camada BFF (*Backend for Frontend*) utilizando **GraphQL**.
     * Exposição de esquema unificado e hierárquico para o Frontend.
     * **Caching Inteligente:** Uso de Redis para cachear resultados de *queries* pesadas (ex: "Top Conflitos da Semana") e CDN para ativos estáticos.
     * Transformação de dados para formatos de visualização (GeoJSON para mapas, JSON Graph para redes).
+
+### 2.6. Aplicação de Frontend ("The Lens")
+Interface de visualização e exploração de dados.
+* **Arquitetura de Renderização Híbrida:** Utilização de renderização no servidor (SSR) para carga inicial rápida e SEO, combinada com renderização no cliente (CSR) para interatividade rica.
+* **Gestão de Estado:** Cache normalizado no cliente para minimizar tráfego de rede em navegações complexas.
+* **Visualização Avançada:**
+    * **Motor GIS:** Renderização vetorial de camadas geoespaciais e mapas de calor.
+    * **Motor de Grafos:** Visualização interativa de redes de nós e arestas.
 
 ---
 ## 3. Fluxo de Execução e Pipeline de Dados
@@ -146,7 +152,7 @@ Adoção do padrão **OpenTelemetry**.
 
 ## 7. Princípio de Design Arquitetural: Locale Context
 Para garantir a extensibilidade global, todos os microserviços devem aderir ao padrão Locale-Context:
-    * **Injeção de Metadados:*** Nenhum texto é processado sem saber seu LangID e RegionID.
+    * **Injeção de Metadados:** Nenhum texto é processado sem saber seu LangID e RegionID.
     * **Proibição de Regras Rígidas:** É vetado o uso de regras de validação específicas de um idioma (ex: Regex para CEP brasileiro) no núcleo dos serviços. Essas regras devem residir em módulos de configuração injetáveis.
     * **UTF-8 Enforcement:** Todo o pipeline, da ingestão ao banco de dados, deve forçar codificação UTF-8 para suportar caracteres globais.
 
@@ -154,4 +160,4 @@ Para garantir a extensibilidade global, todos os microserviços devem aderir ao 
 
 ## 8. Conclusão
 
-A arquitetura v1.2 do **Projeto Janus** consolida a maturidade técnica da plataforma. Com a definição clara dos serviços (`collector`, `babel`, `knowledge-extractor`, `narrative-analyzer`, `api-gateway`) e a adoção de padrões robustos de observabilidade, o sistema está apto a suportar a complexidade da análise de narrativas geopolíticas globais com confiabilidade e precisão.
+A arquitetura v1.3 do **Projeto Janus** consolida a maturidade técnica da plataforma. Com a definição clara dos serviços (`collector`, `babel`, `knowledge-extractor`, `narrative-analyzer`, `api-gateway`, `frontend-app`) e a adoção de padrões robustos de observabilidade, o sistema está apto a suportar a complexidade da análise de narrativas geopolíticas globais com confiabilidade e precisão.
